@@ -1,0 +1,21 @@
+arxiv:
+  categories: []
+  max_candidates: 80
+
+embedding:
+  model: BAAI/bge-small-en-v1.5
+  batch_size: 32
+
+ranking:
+  top_k_neighbors: 5
+  max_results: 15
+
+email:
+  subject_prefix: "[arXiv Daily]"
+  include_pdf_links: true
+  send_empty_email: false
+
+runtime:
+  data_dir: data
+  output_html: output/latest_report.html
+
