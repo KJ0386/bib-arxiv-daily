@@ -36,6 +36,7 @@ class EmailSettings:
 class RuntimeSettings:
     data_dir: Path
     output_html: Path
+    cache_dir: Path
 
 
 @dataclass(frozen=True)
@@ -104,6 +105,7 @@ def load_settings(config_path: Path) -> AppSettings:
         runtime=RuntimeSettings(
             data_dir=Path(runtime_section.get("data_dir", "data")),
             output_html=Path(runtime_section.get("output_html", "output/latest_report.html")),
+            cache_dir=Path(runtime_section.get("cache_dir", ".cache/recommender")),
         ),
     )
 
@@ -132,4 +134,3 @@ def load_smtp_settings() -> SMTPSettings:
         sender=sender,
         use_ssl=use_ssl,
     )
-

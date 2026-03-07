@@ -18,4 +18,4 @@ email:
 runtime:
   data_dir: data
   output_html: output/latest_report.html
-
+  cache_dir: .cache/recommender

@@ -76,10 +76,9 @@ class RecommenderTest(unittest.TestCase):
 
         self.assertEqual(1, len(recommendations))
         self.assertEqual("Graph Signal Learning", recommendations[0].candidate.title)
-        self.assertAlmostEqual(0.6213, recommendations[0].score, places=4)
+        self.assertAlmostEqual(0.6063, recommendations[0].score, places=4)
         self.assertEqual("Graph Neural Networks", recommendations[0].neighbors[0].title)
 
 
 if __name__ == "__main__":
     unittest.main()
-

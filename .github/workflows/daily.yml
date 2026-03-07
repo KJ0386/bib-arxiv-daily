@@ -28,6 +28,17 @@ jobs:
           restore-keys: |
             hf-${{ runner.os }}-
 
+      - name: Cache library embeddings
+        uses: actions/cache@v4
+        with:
+          path: .cache/recommender
+          key: lib-emb-${{ runner.os }}-${{ hashFiles('requirements.txt', 'config.yaml', 'data/**/*.bib') }}
+          restore-keys: |
+            lib-emb-${{ runner.os }}-
+
+      - name: Install CPU PyTorch
+        run: pip install --extra-index-url https://download.pytorch.org/whl/cpu "torch>=2.2,<3.0"
+
       - name: Install dependencies
         run: pip install -r requirements.txt
 

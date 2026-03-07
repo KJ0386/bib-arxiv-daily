@@ -5,9 +5,11 @@ from datetime import datetime, timezone
 import logging
 from pathlib import Path
 import sys
+import time
 
 from arxiv_fetcher import ArxivFetcher
 from bib_loader import load_library
+from embedding_cache import LibraryEmbeddingCache
 from emailer import build_email_html, build_email_subject, send_email
 from embedder import SentenceTransformerEmbedder
 from recommender import Recommender
@@ -58,12 +60,23 @@ def main() -> int:
         model_name=settings.embedding.model,
         batch_size=settings.embedding.batch_size,
     )
+    library_cache = LibraryEmbeddingCache(
+        cache_dir=settings.runtime.cache_dir,
+        model_name=settings.embedding.model,
+    )
+    library_embedding_started_at = time.perf_counter()
+    library_embeddings = library_cache.load_or_compute(library_papers, embedder)
+    LOGGER.info("Library embedding stage finished in %.2f seconds", time.perf_counter() - library_embedding_started_at)
     recommender = Recommender(
         embedder=embedder,
         top_k_neighbors=settings.ranking.top_k_neighbors,
         max_results=settings.ranking.max_results,
     )
-    recommendations = recommender.recommend(library_papers, candidate_papers)
+    recommendations = recommender.recommend(
+        library_papers,
+        candidate_papers,
+        library_embeddings=library_embeddings,
+    )
 
     generated_at = datetime.now(timezone.utc)
     html_body = build_email_html(
@@ -103,4 +116,3 @@ if __name__ == "__main__":
     except Exception as exc:  # pragma: no cover - top-level failure logging
         logging.getLogger(__name__).exception("Pipeline failed: %s", exc)
         raise
-

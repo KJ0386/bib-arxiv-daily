@@ -78,9 +78,9 @@ class ArxivFetcherTest(unittest.TestCase):
         self.assertEqual("https://rss.arxiv.org/atom/cs.LG+cs.AI", fake_feedparser.last_url)
         self.assertEqual(2, len(papers))
         self.assertEqual(("2501.00001", "2501.00003"), fake_arxiv.created_client.seen_batches[0])
-        self.assertEqual("2501.00003v1", papers[0].arxiv_id)
+        self.assertEqual("2501.00001v1", papers[0].arxiv_id)
+        self.assertEqual("2501.00003v1", papers[1].arxiv_id)
 
 
 if __name__ == "__main__":
     unittest.main()
-

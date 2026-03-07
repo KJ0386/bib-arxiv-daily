@@ -46,8 +46,15 @@ def extract_arxiv_id(*values: str | None) -> str | None:
     return None
 
 
+def normalize_arxiv_id(value: str | None) -> str | None:
+    extracted = extract_arxiv_id(value)
+    if extracted is None:
+        return None
+    return re.sub(r"v[0-9]+$", "", extracted)
+
+
 def canonical_identity(title: str | None, doi: str | None = None, arxiv_id: str | None = None) -> str | None:
-    normalized_arxiv = extract_arxiv_id(arxiv_id)
+    normalized_arxiv = normalize_arxiv_id(arxiv_id)
     if normalized_arxiv:
         return f"arxiv:{normalized_arxiv}"
     normalized_doi = normalize_doi(doi)
@@ -70,4 +77,3 @@ def chunked(items: Iterable[str], chunk_size: int) -> list[list[str]]:
     if chunk:
         output.append(chunk)
     return output
-

@@ -24,6 +24,7 @@ class Recommender:
         self,
         library_papers: list[LibraryPaper],
         candidate_papers: list[CandidatePaper],
+        library_embeddings: np.ndarray | None = None,
     ) -> list[Recommendation]:
         if not library_papers or not candidate_papers:
             return []
@@ -43,7 +44,11 @@ class Recommender:
         if not filtered_candidates:
             return []
 
-        library_embeddings = _normalize_rows(self.embedder.encode([paper.embedding_text for paper in library_papers]))
+        if library_embeddings is None:
+            library_embeddings = self.embedder.encode([paper.embedding_text for paper in library_papers])
+        if library_embeddings.shape[0] != len(library_papers):
+            raise ValueError("Library embedding count does not match the number of library papers")
+        library_embeddings = _normalize_rows(np.asarray(library_embeddings, dtype=float))
         candidate_embeddings = _normalize_rows(self.embedder.encode([paper.embedding_text for paper in filtered_candidates]))
         # [EN] Each candidate is scored by its nearest library neighborhood, which keeps recommendations anchored to local research themes instead of global topic frequency. / [CN] 每篇候选论文按其在馆藏语料中的近邻得分，这样推荐更贴近个人研究主题，而不是被全局高频主题主导。
         similarity_matrix = candidate_embeddings @ library_embeddings.T
@@ -67,4 +72,3 @@ class Recommender:
 
         recommendations.sort(key=lambda item: item.score, reverse=True)
         return recommendations[: self.max_results]
-
